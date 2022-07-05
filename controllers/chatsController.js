@@ -1,4 +1,4 @@
-import { getSession, getChatList, isExists, sendMessage, formatPhone } from './../whatsapp.js'
+import { getSession, getChatList, isExists, sendMessage, formatPhone, formatGroup } from './../whatsapp.js'
 import response from './../response.js'
 
 const getList = (req, res) => {
@@ -18,6 +18,26 @@ const send = async (req, res) => {
         }
 
         await sendMessage(session, receiver, message, 0)
+
+        response(res, 200, true, 'The message has been successfully sent.')
+    } catch {
+        response(res, 500, false, 'Failed to send the message.')
+    }
+}
+
+const sendGroup = async (req, res) => {
+    const session = getSession(res.locals.sessionId)
+    const groupid = formatGroup(req.body.groupid)
+    const { message } = req.body
+
+    try {
+        const exists = await isExists(session, groupid, true)
+
+        if (!exists) {
+            return response(res, 400, false, 'The receiver number is not exists.')
+        }
+
+        await sendMessage(session, groupid, message, 0)
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {
@@ -74,4 +94,4 @@ const sendBulk = async (req, res) => {
     )
 }
 
-export { getList, send, sendBulk }
+export { getList, send, sendBulk, sendGroup }

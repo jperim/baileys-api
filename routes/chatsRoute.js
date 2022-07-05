@@ -21,6 +21,16 @@ router.post(
     controller.send
 )
 
+router.post(
+    '/sendgroup',
+    query('id').notEmpty(),
+    body('groupid').notEmpty(),
+    body('message').notEmpty(),
+    requestValidator,
+    sessionValidator,
+    controller.sendGroup
+)
+
 router.post('/send-bulk', query('id').notEmpty(), requestValidator, sessionValidator, controller.sendBulk)
 
 export default router

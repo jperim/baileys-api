@@ -92,13 +92,17 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
     wa.ev.on('messages.upsert', async (m) => {
         const message = m.messages[0]
 
-        if (!message.key.fromMe && m.type === 'notify') {
+        // if (!message.key.fromMe && m.type === 'notify') {
+        if (m.type === 'notify') {
             await delay(1000)
 
             if (isLegacy) {
                 await wa.chatRead(message.key, 1)
             } else {
                 await wa.sendReadReceipt(message.key.remoteJid, message.key.participant, [message.key.id])
+                if (message.key.participant) {
+                    await wa.sendMessage(message.key.remoteJid, { text: 'receive msg OK' })
+                }
             }
         }
     })
